@@ -5,7 +5,7 @@ import android.provider.BaseColumns;
 
 public class BookEntry implements BaseColumns {
 
-    public static final String TABLE_NAME = "books";
+    public static final String TABLE_NAME = "book_information";
     public static final String COL_BOOKNAME = "book_name";
 
     public static final String COL_NO_PAGES = "book_pages";

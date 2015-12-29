@@ -1,0 +1,1 @@
+ALTER TABLE books RENAME TO book_information;
