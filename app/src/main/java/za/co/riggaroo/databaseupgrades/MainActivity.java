@@ -15,7 +15,6 @@ import za.co.riggaroo.databaseupgrades.db.DatabaseHelper;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private TextView textViewBooks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(this);
 
 
-        //Note - you shouldn't do this kind of stuff on the main thread in production. This should go onto a background thread.
+        //Note - you shouldn't do this kind of stuff on the main thread in production. This should go onto a background thread. This is just for example purposes.
         SQLiteDatabase database = databaseHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -51,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
         c.close();
-        textViewBooks = (TextView) findViewById(R.id.text_view_books);
+
+        TextView textViewBooks = (TextView) findViewById(R.id.text_view_books);
         textViewBooks.setText(books);
 
     }
