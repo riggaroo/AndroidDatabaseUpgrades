@@ -30,12 +30,14 @@ public class MainActivity extends AppCompatActivity {
         contentValues.put(BookEntry.COL_BOOKNAME, "Life of Pi");
         contentValues.put(BookEntry.COL_DESCRIPTION, "Yann Martel's Life of Pi is the story of a young man who survives a harrowing shipwreck and months in a lifeboat with a large Bengal tiger named Richard Parker. The beginning of the novel covers Pi's childhood and youth.");
         contentValues.put(BookEntry.COL_NO_PAGES, 24325);
+        contentValues.put(BookEntry.COL_RATING, 8);
         database.insert(BookEntry.TABLE_NAME, null, contentValues);
 
         ContentValues contentValues2 = new ContentValues();
         contentValues2.put(BookEntry.COL_BOOKNAME, "Gone Girl");
         contentValues2.put(BookEntry.COL_DESCRIPTION, "In Carthage, Mo., former New York-based writer Nick Dunne (Ben Affleck) and his glamorous wife Amy (Rosamund Pike) present a portrait of a blissful marriage to the public. However, when Amy goes missing on the couple's fifth wedding anniversary, Nick becomes the prime suspect in her disappearance. The resulting police pressure and media frenzy cause the Dunnes' image of a happy union to crumble, leading to tantalizing questions about who Nick and Amy truly are.");
         contentValues2.put(BookEntry.COL_NO_PAGES, 45425);
+        contentValues2.put(BookEntry.COL_RATING, 5);
         database.insert(BookEntry.TABLE_NAME, null, contentValues2);
 
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
@@ -45,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
         while (c.moveToNext()) {
             String bookName =  c.getString(c.getColumnIndex(BookEntry.COL_BOOKNAME)) ;
             String bookDescription = c.getString(c.getColumnIndex(BookEntry.COL_DESCRIPTION));
-            books+= bookName + " - " + bookDescription + "\r\n"  ;
+            String rating = c.getString(c.getColumnIndex(BookEntry.COL_RATING));
+            books+= bookName + " - " + bookDescription + ".[RATING]:"+ rating + "\r\n"  ;
             Log.d(TAG, "Book Name:" + bookName);
 
         }

@@ -1,0 +1,1 @@
+ALTER TABLE books ADD COLUMN book_rating INTEGER;
