@@ -19,6 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "database.db";
     private static final String TAG = DatabaseHelper.class.getName();
+    private static final String DROP = "drop table if exists ";
 
     private static DatabaseHelper mInstance = null;
     private final Context context;
@@ -46,28 +47,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.e(TAG, "Updating table from " + oldVersion + " to " + newVersion);
-        // You will not need to modify this unless you need to do some android specific things.
-        // When upgrading the database, all you need to do is add a file to the raw folder and name it:
-        // from_1_to_2.sql with the version that you are upgrading to as the last version.
-        try {
-            for (int i = oldVersion; i < newVersion; ++i) {
 
-                String migrationName = String.format("from_%d_to_%d", i, (i + 1));
-                Log.e(TAG, "Looking for migration file: " + migrationName);
-
-                int migrationFileResId = context.getResources()
-                        .getIdentifier(migrationName, "raw", context.getPackageName());
-
-                if (migrationFileResId != 0) {
-                    Log.e(TAG, "Migration script found executing: " + migrationName);
-                    readAndExecuteSQLScript(db, context, migrationFileResId);
-                } else {
-                    Log.e(TAG, "Migration script not found: " + migrationName);
-                }
-            }
-        } catch (Exception exception) {
-            Log.e(TAG, "Exception running upgrade script:", exception);
+        //Added new column to book table - book rating
+        if (oldVersion < 2){
+            db.execSQL(DROP + BookEntry.TABLE_NAME);
+            db.execSQL(BookEntry.SQL_CREATE_BOOK_ENTRY_TABLE);
         }
+        //Rename table to book_information - this is where things will start failing.
+        if (oldVersion < 3){
+            db.execSQL(DROP + BookEntry.TABLE_NAME);
+            db.execSQL(BookEntry.SQL_CREATE_BOOK_ENTRY_TABLE);
+        }
+        // Add new column for a calculated value. By this time, if I am upgrading from version 2 to
+        // version 4, my table would already contain the new column I am trying to add below,
+        // which would result in a SQLException. These situations are sometimes difficult to spot,
+        // as you basically need to test from every different version of database to upgrade from.
+        // Some upgrades might work and some might fail with this method.
+        // It is best to follow the other method that is on the master branch of this repo.
+        if (oldVersion < 4){
+            db.execSQL("ALTER TABLE " + BookEntry.TABLE_NAME  + " ADD COLUMN calculated_pages_times_rating INTEGER;");
+        }
+        //As you can probably imagine, this is a terrible way to do upgrades, Please DONT DO IT!!!!
+
 
     }
 
@@ -76,46 +77,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    private void readAndExecuteSQLScript(SQLiteDatabase db, Context ctx, int sqlScriptResId) {
-        if (sqlScriptResId == 0) {
-            throw new IllegalArgumentException("No SQL script found for specified resource.");
-        }
 
-        Log.d(TAG, "Script found. Executing...");
-        Resources res = ctx.getResources();
-        BufferedReader reader = null;
 
-        try {
-            InputStream is = res.openRawResource(sqlScriptResId);
-            InputStreamReader isr = new InputStreamReader(is);
-            reader = new BufferedReader(isr);
-            executeSQLScript(db, reader);
-        } catch (IOException e) {
-            Log.e(TAG, "IOException:", e);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "IOException:", e);
-                }
-            }
-        }
 
-    }
-
-    private void executeSQLScript(SQLiteDatabase db, BufferedReader reader) throws IOException {
-        String line;
-        StringBuilder statement = new StringBuilder();
-        while ((line = reader.readLine()) != null) {
-            statement.append(line);
-            statement.append("\n");
-            if (line.endsWith(";")) {
-                db.execSQL(statement.toString());
-                statement = new StringBuilder();
-            }
-        }
-    }
 
 }
 
