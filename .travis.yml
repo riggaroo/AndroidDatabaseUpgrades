@@ -1,4 +1,10 @@
 language: android
+jdk: oraclejdk7
+# Turn off caching to avoid any caching problems
+cache: false
+# Use the Travis Container-Based Infrastructure
+sudo: false
+
 android:
   components:
     - platform-tools
@@ -11,7 +17,6 @@ android:
     - extra-android-m2repository
     - addon-google_apis-google-19
     - sys-img-armeabi-v7a-android-21
-
 
 env:
   global:
