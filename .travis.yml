@@ -35,7 +35,7 @@ script:
   - ./gradlew connectedAndroidTest
 
 install:
-    pip install --upgrade pip
-    pip install codecov
+    - pip install --upgrade pip
+    - pip install codecov
 after_success:
     codecov
