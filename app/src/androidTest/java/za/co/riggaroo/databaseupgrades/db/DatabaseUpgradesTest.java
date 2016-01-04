@@ -10,6 +10,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,7 @@ public class DatabaseUpgradesTest {
      */
     @Test
     public void testDatabaseUpgrades() throws IOException {
+        DatabaseHelper.getInstance(InstrumentationRegistry.getTargetContext());
 
         for (int i = 1; i < DatabaseHelper.DATABASE_VERSION; i++) {
             Log.d(TAG, "Testing upgrade from version:" + i);
@@ -54,6 +56,11 @@ public class DatabaseUpgradesTest {
         String dbName = String.format("database_v%d.db", version);
         InputStream mInput = InstrumentationRegistry.getContext().getAssets().open(dbName);
 
+        File db = new File(dbPath);
+        if (!db.exists()){
+            db.getParentFile().mkdirs();
+            db.createNewFile();
+        }
         OutputStream mOutput = new FileOutputStream(dbPath);
         byte[] mBuffer = new byte[1024];
         int mLength;
