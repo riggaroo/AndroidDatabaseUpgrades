@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -16,9 +17,9 @@ import java.io.InputStreamReader;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 4;
+    static final int DATABASE_VERSION = 4;
 
-    private static final String DATABASE_NAME = "database.db";
+    static final String DATABASE_NAME = "database.db";
     private static final String TAG = DatabaseHelper.class.getName();
 
     private static DatabaseHelper mInstance = null;
@@ -36,6 +37,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return mInstance;
     }
 
+    @VisibleForTesting
+    public static void clearInstance() {
+        mInstance = null;
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(BookEntry.SQL_CREATE_BOOK_ENTRY_TABLE);
@@ -50,14 +56,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // You will not need to modify this unless you need to do some android specific things.
         // When upgrading the database, all you need to do is add a file to the assets folder and name it:
         // from_1_to_2.sql with the version that you are upgrading to as the last version.
-        try {
-            for (int i = oldVersion; i < newVersion; ++i) {
-                String migrationName = String.format("from_%d_to_%d.sql", i, (i + 1));
-                Log.d(TAG, "Looking for migration file: " + migrationName);
-                readAndExecuteSQLScript(db, context, migrationName);
-            }
-        } catch (Exception exception) {
-            Log.e(TAG, "Exception running upgrade script:", exception);
+        for (int i = oldVersion; i < newVersion; ++i) {
+            String migrationName = String.format("from_%d_to_%d.sql", i, (i + 1));
+            Log.d(TAG, "Looking for migration file: " + migrationName);
+            readAndExecuteSQLScript(db, context, migrationName);
         }
 
     }

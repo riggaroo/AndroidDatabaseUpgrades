@@ -10,6 +10,8 @@ android {
         targetSdkVersion 23
         versionCode 4
         versionName "1.0.3"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
     buildTypes {
         release {
@@ -17,10 +19,44 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+
+        exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
+        exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
+        exclude 'LICENSE.txt'
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
+    androidTestCompile ('com.android.support.test.espresso:espresso-web:2.2.1'){
+        exclude module: 'support-annotations'
+        exclude module: 'support-v4'
+    }
+    androidTestCompile ("com.android.support.test:runner:$rootProject.ext.runnerVersion"){
+        exclude module: 'support-annotations'
+        exclude module: 'support-v4'
+    }
+    androidTestCompile ("com.android.support.test:rules:$rootProject.ext.runnerVersion"){
+        exclude module: 'support-annotations'
+        exclude module: 'support-v4'
+    }
+
+    // Espresso UI Testing
+    androidTestCompile ("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion"){
+        exclude module: 'recyclerview-v7'
+        exclude module: 'support-annotations'
+        exclude module: 'support-v4'
+        exclude group: "javax.inject"
+
+    }
 }

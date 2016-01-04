@@ -21,3 +21,13 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    // Sdk and tools
+    junitVersion = '4.12'
+    mockitoVersion = '1.10.19'
+    powerMockito = '1.6.2'
+    runnerVersion = '0.4.1'
+    rulesVersion = '0.4.1'
+    espressoVersion = '2.2.1'
+}
