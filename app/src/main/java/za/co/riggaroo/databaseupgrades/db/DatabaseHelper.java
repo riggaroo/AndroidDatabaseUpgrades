@@ -2,9 +2,10 @@ package za.co.riggaroo.databaseupgrades.db;
 
 
 import android.content.Context;
-import android.content.res.Resources;
+import android.content.res.AssetManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -47,23 +48,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.e(TAG, "Updating table from " + oldVersion + " to " + newVersion);
         // You will not need to modify this unless you need to do some android specific things.
-        // When upgrading the database, all you need to do is add a file to the raw folder and name it:
+        // When upgrading the database, all you need to do is add a file to the assets folder and name it:
         // from_1_to_2.sql with the version that you are upgrading to as the last version.
         try {
             for (int i = oldVersion; i < newVersion; ++i) {
-
-                String migrationName = String.format("from_%d_to_%d", i, (i + 1));
-                Log.e(TAG, "Looking for migration file: " + migrationName);
-
-                int migrationFileResId = context.getResources()
-                        .getIdentifier(migrationName, "raw", context.getPackageName());
-
-                if (migrationFileResId != 0) {
-                    Log.e(TAG, "Migration script found executing: " + migrationName);
-                    readAndExecuteSQLScript(db, context, migrationFileResId);
-                } else {
-                    Log.e(TAG, "Migration script not found: " + migrationName);
-                }
+                String migrationName = String.format("from_%d_to_%d.sql", i, (i + 1));
+                Log.d(TAG, "Looking for migration file: " + migrationName);
+                readAndExecuteSQLScript(db, context, migrationName);
             }
         } catch (Exception exception) {
             Log.e(TAG, "Exception running upgrade script:", exception);
@@ -76,17 +67,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    private void readAndExecuteSQLScript(SQLiteDatabase db, Context ctx, int sqlScriptResId) {
-        if (sqlScriptResId == 0) {
-            throw new IllegalArgumentException("No SQL script found for specified resource.");
+    private void readAndExecuteSQLScript(SQLiteDatabase db, Context ctx, String fileName) {
+        if (TextUtils.isEmpty(fileName)) {
+            Log.d(TAG, "SQL script file name is empty");
+            return;
         }
 
         Log.d(TAG, "Script found. Executing...");
-        Resources res = ctx.getResources();
+        AssetManager assetManager = ctx.getAssets();
         BufferedReader reader = null;
 
         try {
-            InputStream is = res.openRawResource(sqlScriptResId);
+            InputStream is = assetManager.open(fileName);
             InputStreamReader isr = new InputStreamReader(is);
             reader = new BufferedReader(isr);
             executeSQLScript(db, reader);
